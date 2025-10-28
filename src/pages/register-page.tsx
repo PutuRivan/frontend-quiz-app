@@ -4,11 +4,15 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { user, type TUser } from "@/libs/schema";
+import { useAuth } from "@/context/auth-context";
 
 
 export default function RegisterPage() {
+  const { register } = useAuth()
+  const navigate = useNavigate()
+
   const form = useForm<TUser>({
     resolver: zodResolver(user),
     defaultValues: {
@@ -17,9 +21,19 @@ export default function RegisterPage() {
     },
   })
 
-  function onSubmit(values: TUser) {
-    console.log(values)
+  async function onSubmit(values: TUser) {
+    try {
+      await register({
+        username: values.username,
+        password: values.password
+      })
+
+      navigate('/')
+    } catch (error: any) {
+      alert(error.message || "Gagal membuat akun");
+    }
   }
+  
   return (
     <section className="grid grid-cols-1 place-items-center h-screen">
       <Card className="w-full max-w-sm">

@@ -8,21 +8,26 @@ import DashboardLayout from './layout/dashboard-layout.tsx'
 import HomeDashboardPage from './pages/home-dashboard-page.tsx'
 import QuizPage from './pages/quiz-page.tsx'
 import QuizLayout from './layout/quiz-layout.tsx'
+import QuizResultPage from './pages/quiz-result-page.tsx'
+import AuthProviders from './providers/auth-providers.tsx'
 
 createRoot(document.getElementById('root')!).render(
-  <BrowserRouter>
-    <Routes>
-      <Route element={<AuthLayout />}>
-        <Route path="/" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-      </Route>
-      <Route path="dashboard" element={<DashboardLayout />}>
-        <Route index element={<HomeDashboardPage />} />
-        {/* <Route path="/register" element={<RegisterPage />} /> */}
-      </Route>
-      <Route path='quiz' element={<QuizLayout />}>
-        <Route index element={<QuizPage />} />
-      </Route>
-    </Routes>
-  </BrowserRouter>,
+  <AuthProviders>
+
+    <BrowserRouter>
+      <Routes>
+        <Route element={<AuthLayout />}>
+          <Route path="/" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+        </Route>
+        <Route path="dashboard" element={<DashboardLayout />}>
+          <Route index element={<HomeDashboardPage />} />
+        </Route>
+        <Route path='quiz' element={<QuizLayout />}>
+          <Route index element={<QuizPage />} />
+          <Route path='result' element={<QuizResultPage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  </AuthProviders>
 )

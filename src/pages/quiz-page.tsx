@@ -1,10 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { ChevronLeft, ChevronRight, Clock, Check } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Progress } from "@/components/ui/progress"
 import QuizHeader from "@/components/quiz/quiz-header"
 import QuizContainer from "@/components/quiz/quiz-container"
 
@@ -172,7 +168,7 @@ export default function QuizPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 p-6">
       <div className="mx-auto max-w-4xl">
         <QuizHeader
           currentQuestion={currentQuestion}

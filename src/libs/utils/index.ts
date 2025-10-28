@@ -10,3 +10,23 @@ export function formatTime(seconds: number) {
   const secs = seconds % 60
   return `${mins}:${secs.toString().padStart(2, "0")}`
 }
+
+export async function hashPassword(password: string) {
+  const enc = new TextEncoder();
+  const data = enc.encode(password);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+export function loadUsers() {
+  try {
+    return JSON.parse(localStorage.getItem('dummy_users') || '[]');
+  } catch {
+    return [];
+  }
+}
+
+export function saveUsers(users: any) {
+  localStorage.setItem('dummy_users', JSON.stringify(users));
+}
