@@ -5,7 +5,7 @@ export default function DashboardLayout() {
   return (
     <>
       <Navbar />
-      <main>
+      <main className="p-5 px-20">
         <Outlet />
       </main>
     </>
