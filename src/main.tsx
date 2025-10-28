@@ -18,6 +18,9 @@ createRoot(document.getElementById('root')!).render(
         <Route index element={<HomeDashboardPage />} />
         {/* <Route path="/register" element={<RegisterPage />} /> */}
       </Route>
+      <Route path='quiz' >
+        <Route index element={<div>404</div>} />
+      </Route>
     </Routes>
   </BrowserRouter>,
 )
