@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Link } from "react-router";
 
 const data = [
   {
@@ -53,7 +54,9 @@ export default function HomeDashboardPage() {
           <h1 className="text-2xl font-bold">Welcome, Alex!</h1>
           <p className="text-muted-foreground">Ready to Test Your Knowledge?</p>
         </div>
-        <Button>Start Quiz</Button>
+        <Button>
+          <Link to={'/quiz'}>Start Quiz</Link>
+        </Button>
       </div>
       <div className="grid grid-cols-3 gap-5 pt-5">
         {data.map((item, index) => (

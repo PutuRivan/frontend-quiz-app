@@ -6,6 +6,8 @@ import AuthLayout from './layout/auth-layout.tsx'
 import LoginPage from './pages/login-page.tsx'
 import DashboardLayout from './layout/dashboard-layout.tsx'
 import HomeDashboardPage from './pages/home-dashboard-page.tsx'
+import QuizPage from './pages/quiz-page.tsx'
+import QuizLayout from './layout/quiz-layout.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
@@ -18,8 +20,8 @@ createRoot(document.getElementById('root')!).render(
         <Route index element={<HomeDashboardPage />} />
         {/* <Route path="/register" element={<RegisterPage />} /> */}
       </Route>
-      <Route path='quiz' >
-        <Route index element={<div>404</div>} />
+      <Route path='quiz' element={<QuizLayout />}>
+        <Route index element={<QuizPage />} />
       </Route>
     </Routes>
   </BrowserRouter>,

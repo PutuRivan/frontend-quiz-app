@@ -1,5 +1,11 @@
+import { Outlet } from "react-router";
+
 export default function QuizLayout() {
   return (
-    <div>QuizLayout</div>
+    <>
+      <main>
+        <Outlet />
+      </main>
+    </>
   )
 }
