@@ -2,7 +2,6 @@ import { useEffect, useState } from "react"
 import QuizHeader from "@/components/quiz/quiz-header"
 import QuizContainer from "@/components/quiz/quiz-container"
 import { useNavigate } from "react-router"
-import { Button } from "@/components/ui/button"
 import { useAuth } from "@/context/auth-context"
 
 interface Question {
@@ -156,21 +155,25 @@ export default function QuizPage() {
     const wrongAnswers = totalQuestions - correctAnswers
     const score = Math.round((correctAnswers / totalQuestions) * 100)
 
+    // Hanya simpan kalau user login
     if (user?.username) {
       const result = {
-        user: user?.username,
+        user: user.username,
         score,
         date: new Date().toISOString().split("T")[0],
-      };
-      const existingResults = JSON.parse(localStorage.getItem("user_quiz_results") || "[]");
-      localStorage.setItem("quizResults", JSON.stringify([...existingResults, result]));
-    }
+      }
 
+      const existingResults = JSON.parse(localStorage.getItem("quizResults") || "[]")
+      const updatedResults = [...existingResults, result]
+
+      localStorage.setItem("quizResults", JSON.stringify(updatedResults))
+    }
 
     navigate("/quiz/result", {
       state: { totalQuestions, correctAnswers, wrongAnswers, score },
     })
   }
+
 
   useEffect(() => {
     if (timeLeft <= 0) {

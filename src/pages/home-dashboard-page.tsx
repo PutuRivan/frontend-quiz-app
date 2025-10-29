@@ -1,43 +1,63 @@
 import GuestDashboard from "@/components/dashboard/guest/guest-dashboard"
 import UserDashboard from "@/components/dashboard/user/user-dashboard"
 import { useAuth } from "@/context/auth-context"
+import { useEffect, useState } from "react"
 
 
-const data = [
-  {
-    title: "Last Score",
-    number: 85
-  },
-  {
-    title: "Total Attemps",
-    number: 12
-  },
-  {
-    title: "Best Score",
-    number: 95
-  }
-]
+interface Statistic {
+  title: string
+  number: number
+}
 
-const recentScores = [
-  { user: "Alex", score: 85, date: "2023-10-26" },
-  { user: "Jamie", score: 92, date: "2023-10-25" },
-  { user: "Sam", score: 78, date: "2023-10-25" },
-  { user: "Taylor", score: 95, date: "2023-10-24" },
-  { user: "Taylor", score: 95, date: "2023-10-24" },
-  { user: "Taylor", score: 95, date: "2023-10-24" },
-  { user: "Taylor", score: 95, date: "2023-10-24" },
-  { user: "Taylor", score: 95, date: "2023-10-24" },
-  { user: "Taylor", score: 95, date: "2023-10-24" },
-  { user: "Taylor", score: 95, date: "2023-10-24" },
-  { user: "Taylor", score: 95, date: "2023-10-24" },
-]
+interface RecentScore {
+  user: string
+  score: number
+  date: string
+}
+
 
 export default function HomeDashboardPage() {
   const { user } = useAuth()
+  const [stats, setStats] = useState<Statistic[]>([])
+  const [recentScores, setRecentScores] = useState<RecentScore[]>([])
+
+  useEffect(() => {
+    const storedResults = localStorage.getItem("quizResults")
+    if (!storedResults) return
+
+    const results: RecentScore[] = JSON.parse(storedResults)
+
+    // Urutkan leaderboard dari skor tertinggi
+    setRecentScores(results.sort((a, b) => b.score - a.score))
+
+    // Hitung statistik user login
+    if (user?.username) {
+      const userResults = results.filter(r => r.user === user.username)
+
+      if (userResults.length > 0) {
+        const lastScore = userResults[userResults.length - 1].score
+        const bestScore = Math.max(...userResults.map(r => r.score))
+        const totalAttempts = userResults.length
+
+        setStats([
+          { title: "Last Score", number: lastScore },
+          { title: "Total Attempts", number: totalAttempts },
+          { title: "Best Score", number: bestScore },
+        ])
+      } else {
+        // Jika belum pernah main, tampilkan default
+        setStats([
+          { title: "Last Score", number: 0 },
+          { title: "Total Attempts", number: 0 },
+          { title: "Best Score", number: 0 },
+        ])
+      }
+    }
+  }, [user])
   return (
     <>
       {user?.username ? (
-        <UserDashboard stats={data} recentScore={recentScores} />
+        <UserDashboard user={user.username} stats={stats} recentScore={recentScores} />
       ) : (
         <GuestDashboard />
       )}
