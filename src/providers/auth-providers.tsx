@@ -21,7 +21,7 @@ export default function AuthProviders({
 }) {
   const [user, setUser] = useState<User | null>(() => {
     try {
-      const stored = localStorage.getItem("dummy_current_user");
+      const stored = localStorage.getItem("current_user");
       return stored ? JSON.parse(stored) : null;
     } catch {
       return null;
@@ -32,7 +32,7 @@ export default function AuthProviders({
 
   // Simpan user aktif ke localStorage setiap berubah
   useEffect(() => {
-    localStorage.setItem("dummy_current_user", JSON.stringify(user || null));
+    localStorage.setItem("current_user", JSON.stringify(user || null));
   }, [user]);
 
   // 🔹 Register

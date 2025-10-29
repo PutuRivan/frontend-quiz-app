@@ -1,7 +1,11 @@
 import { BookOpen } from "lucide-react"
 import { Button } from "../ui/button"
+import { useAuth } from "@/context/auth-context"
+import { Link } from "react-router"
+import { LogoutConfirmation } from "./user/logout-confirmation"
 
 export default function Navbar() {
+  const { user, logout } = useAuth()
   return (
     <header className="border-b border-border">
       <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
@@ -11,9 +15,21 @@ export default function Navbar() {
           </div>
           <h1 className="text-2xl font-bold text-foreground">QuizMaster</h1>
         </div>
-        <Button variant="outline" className="bg-purple-100 text-purple-600 hover:bg-purple-200 border-purple-200">
-          Logout
-        </Button>
+        {user?.username ? (
+          // <Button onClick={logout} variant="outline" className="bg-purple-100 text-purple-600 hover:bg-purple-200 border-purple-200">
+          //   Logout
+          // </Button>
+          <LogoutConfirmation />
+        ) : (
+          <div className="flex gap-5">
+            <Button variant={"secondary"}>
+              <Link to={"/"}>Login</Link>
+            </Button>
+            <Button variant={"default"}>
+              <Link to={"/register"}>Register</Link>
+            </Button>
+          </div>
+        )}
       </div>
     </header>
   )

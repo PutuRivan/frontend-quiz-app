@@ -21,12 +21,12 @@ export async function hashPassword(password: string) {
 
 export function loadUsers() {
   try {
-    return JSON.parse(localStorage.getItem('dummy_users') || '[]');
+    return JSON.parse(localStorage.getItem('stored_users') || '[]');
   } catch {
     return [];
   }
 }
 
 export function saveUsers(users: any) {
-  localStorage.setItem('dummy_users', JSON.stringify(users));
+  localStorage.setItem('stored_users', JSON.stringify(users));
 }
