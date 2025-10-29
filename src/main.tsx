@@ -13,7 +13,6 @@ import AuthProviders from './providers/auth-providers.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <AuthProviders>
-
     <BrowserRouter>
       <Routes>
         <Route element={<AuthLayout />}>

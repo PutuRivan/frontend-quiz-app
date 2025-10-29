@@ -23,10 +23,12 @@ interface QuizContainerProps {
   currentQuestion: number
   selectedAnswers: Record<number, string>
   answeredCount: number
+  allAnswered: boolean
   handleSelectAnswer: (optionId: string) => void
   handleNext: () => void
   handlePrevious: () => void
   handleQuestionClick: (index: number) => void
+  handleFinishQuiz: () => void
 }
 
 export default function QuizContainer({
@@ -39,6 +41,8 @@ export default function QuizContainer({
   handleNext,
   handlePrevious,
   handleQuestionClick,
+  handleFinishQuiz,
+  allAnswered
 }: QuizContainerProps) {
   return (
     <section>
@@ -48,13 +52,12 @@ export default function QuizContainer({
           <button
             key={q.id}
             onClick={() => handleQuestionClick(index)}
-            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full font-semibold transition-all ${
-              index === currentQuestion
+            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full font-semibold transition-all ${index === currentQuestion
                 ? "bg-blue-600 text-white shadow-lg"
                 : selectedAnswers[index]
-                ? "bg-purple-200 text-purple-700"
-                : "bg-purple-100 text-slate-600 hover:bg-purple-200"
-            }`}
+                  ? "bg-purple-200 text-purple-700"
+                  : "bg-purple-100 text-slate-600 hover:bg-purple-200"
+              }`}
           >
             {selectedAnswers[index] ? <Check className="h-5 w-5" /> : index + 1}
           </button>
@@ -79,11 +82,10 @@ export default function QuizContainer({
           {question.options.map((option) => (
             <div
               key={option.id}
-              className={`flex items-center gap-4 rounded-full border-2 px-6 py-4 transition-all cursor-pointer ${
-                selectedAnswers[currentQuestion] === option.id
+              className={`flex items-center gap-4 rounded-full border-2 px-6 py-4 transition-all cursor-pointer ${selectedAnswers[currentQuestion] === option.id
                   ? "border-blue-600 bg-purple-50"
                   : "border-slate-200 bg-white hover:border-slate-300"
-              }`}
+                }`}
             >
               <RadioGroupItem value={option.id} id={option.id} className="h-6 w-6" />
               <label
@@ -114,14 +116,27 @@ export default function QuizContainer({
           {answeredCount} of {questions.length} answered
         </div>
 
-        <Button
-          onClick={handleNext}
-          disabled={currentQuestion === questions.length - 1}
-          className="gap-2 rounded-full bg-blue-600 px-6 py-2 text-white hover:bg-blue-700"
-        >
-          Next
-          <ChevronRight className="h-5 w-5" />
-        </Button>
+        {currentQuestion === questions.length - 1 && allAnswered ? (
+          // 🔹 Kalau di pertanyaan terakhir & semua sudah dijawab → Submit
+          <Button
+            type="button"
+            onClick={handleFinishQuiz} // akan kamu ganti di QuizPage dengan handleFinishQuiz
+            className="gap-2 rounded-full bg-green-600 px-6 py-2 text-white hover:bg-green-700"
+          >
+            <Check className="h-5 w-5" />
+            Submit
+          </Button>
+        ) : (
+          // 🔹 Selain itu tetap Next
+          <Button
+            onClick={handleNext}
+            disabled={currentQuestion === questions.length - 1}
+            className="gap-2 rounded-full bg-blue-600 px-6 py-2 text-white hover:bg-blue-700"
+          >
+            Next
+            <ChevronRight className="h-5 w-5" />
+          </Button>
+        )}
       </div>
     </section>
   )

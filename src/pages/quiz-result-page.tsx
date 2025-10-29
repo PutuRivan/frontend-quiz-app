@@ -1,21 +1,18 @@
-"use client"
-
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { useAuth } from "@/context/auth-context"
+import { useLocation, useNavigate } from "react-router"
 
-interface QuizResultsProps {
-  totalQuestions?: number
-  correctAnswers?: number
-  wrongAnswers?: number
-  score?: number
-}
-
-export default function QuizResultPage({
-  totalQuestions = 20,
-  correctAnswers = 18,
-  wrongAnswers = 2,
-  score = 90,
-}: QuizResultsProps) {
+export default function QuizResultPage() {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { totalQuestions, correctAnswers, wrongAnswers, score } = location.state || {
+    totalQuestions: 0,
+    correctAnswers: 0,
+    wrongAnswers: 0,
+    score: 0,
+  }
+  const { user } = useAuth()
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <Card className="w-full max-w-2xl bg-white shadow-lg rounded-3xl p-8 md:p-12">
@@ -42,27 +39,29 @@ export default function QuizResultPage({
           </div>
           <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
             <div
-              className="bg-gradient-to-r from-blue-600 to-purple-600 h-full rounded-full transition-all duration-500"
+              className="bg-linear-to-r from-blue-600 to-purple-600 h-full rounded-full transition-all duration-500"
               style={{ width: `${score}%` }}
             />
           </div>
         </div>
 
         {/* Info Text */}
-        <p className="text-center text-gray-500 text-sm mb-10">Scores are not saved for guest sessions.</p>
+        {!user?.username && (
+          <p className="text-center text-gray-500 text-sm mb-10">Scores are not saved for guest sessions.</p>
+        )}
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button
-            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-8 py-6 rounded-full text-lg"
-            onClick={() => window.location.reload()}
+            className="bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-8 py-6 rounded-full text-lg"
+            onClick={() => navigate('/quiz')}
           >
             Try Again
           </Button>
           <Button
             variant="outline"
             className="border-2 border-gray-300 text-gray-800 font-semibold px-8 py-6 rounded-full text-lg hover:bg-gray-50 bg-transparent"
-            onClick={() => (window.location.href = "/")}
+            onClick={() => navigate('/dashboard')}
           >
             Go Home
           </Button>
