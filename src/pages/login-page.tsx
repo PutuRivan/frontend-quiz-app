@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router";
-import { type TUser, user } from "@/libs/schema";
+import { type TUserAuth, user } from "@/libs/schema";
 import { useAuth } from "@/context/auth-context";
 import { toast } from "sonner";
 
@@ -13,7 +13,7 @@ import { toast } from "sonner";
 export default function LoginPage() {
   const { login } = useAuth()
   const navigate = useNavigate()
-  const form = useForm<TUser>({
+  const form = useForm<TUserAuth>({
     resolver: zodResolver(user),
     defaultValues: {
       username: "",
@@ -21,7 +21,7 @@ export default function LoginPage() {
     },
   })
 
-  async function onSubmit(values: TUser) {
+  async function onSubmit(values: TUserAuth) {
     try {
       await login({
         username: values.username,

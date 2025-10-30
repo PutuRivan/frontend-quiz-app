@@ -9,4 +9,4 @@ export const user = z.object({
   }),
 })
 
-export type TUser = z.infer<typeof user>
+export type TUserAuth = z.infer<typeof user>

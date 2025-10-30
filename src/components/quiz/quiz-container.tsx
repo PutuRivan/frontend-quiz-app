@@ -46,7 +46,7 @@ export default function QuizContainer({
 }: QuizContainerProps) {
   return (
     <section>
-      <div className="mb-8 flex gap-3 overflow-x-auto pb-2">
+      <div className="mb-4 flex gap-3 overflow-x-auto pb-2">
         {questions.map((q, index) => (
           <button
             key={q.id}
@@ -70,7 +70,7 @@ export default function QuizContainer({
         <h2 className="mb-4 text-3xl font-bold">{question.question}</h2>
       </div>
 
-      <div className="mb-8 space-y-3">
+      <div className="mb-4 space-y-3">
         <RadioGroup
           value={selectedAnswers[currentQuestion] || ""}
           onValueChange={handleSelectAnswer}

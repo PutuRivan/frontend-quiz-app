@@ -20,7 +20,7 @@ export function LogoutConfirmation({ logout }: LogoutConfirmationProps) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="outline" className="bg-purple-100 text-purple-600 hover:bg-purple-200 border-purple-200">
+        <Button variant="secondary">
           Logout
         </Button>
       </AlertDialogTrigger>
@@ -33,7 +33,7 @@ export function LogoutConfirmation({ logout }: LogoutConfirmationProps) {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={logout} className="bg-purple-600 hover:bg-purple-700">
+          <AlertDialogAction onClick={logout} >
             Logout
           </AlertDialogAction>
         </AlertDialogFooter>

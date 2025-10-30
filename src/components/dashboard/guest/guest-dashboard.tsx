@@ -18,11 +18,11 @@ export default function GuestDashboard() {
       <GuestStartQuizAlert />
 
       <p className="text-muted-foreground text-base">
-        <Link to="/" className="text-purple-600 hover:text-purple-700 hover:underline">
+        <Link to="/" className="text-primary/60 hover:text-primary/90">
           Login
         </Link>
         {" or "}
-        <Link to="/register" className="text-purple-600 hover:text-purple-700 hover:underline">
+        <Link to="/register" className="text-primary/60 hover:text-primary/90">
           Register
         </Link>
         {" to save your progress."}

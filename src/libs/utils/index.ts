@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import type { TUserResult } from "../types"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -29,6 +30,26 @@ export function loadUsers() {
 
 export function saveUsers(users: any) {
   localStorage.setItem('stored_users', JSON.stringify(users));
+}
+
+export function loadStoredResults() {
+  return JSON.parse(localStorage.getItem('quizResults') || '[]');
+}
+
+export function setStoredResults(result: TUserResult, existing: TUserResult[]) {
+  localStorage.setItem("quizResults", JSON.stringify([result, ...existing]))
+}
+
+export function loadUserQuizSession(user: string) {
+  try {
+    return JSON.parse(localStorage.getItem(`quizSession_${user}`) || 'null');
+  } catch {
+    return null;
+  }
+}
+
+export function setUserQuizSession(user: string, session: any) {
+  localStorage.setItem(`quizSession_${user}`, JSON.stringify(session));
 }
 
 export function decodeHTMLEntities(text: string) {

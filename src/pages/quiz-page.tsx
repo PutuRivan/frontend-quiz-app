@@ -4,7 +4,7 @@ import QuizContainer from "@/components/quiz/quiz-container"
 import { useNavigate, useLocation } from "react-router"
 import { useAuth } from "@/context/auth-context"
 import { getQuestion } from "@/libs/apis"
-import { decodeHTMLEntities } from "@/libs/utils"
+import { decodeHTMLEntities, loadStoredResults, setStoredResults } from "@/libs/utils"
 
 interface Question {
   id: number
@@ -95,8 +95,8 @@ export default function QuizPage() {
         date: new Date().toLocaleString("id-ID", { dateStyle: "short", timeStyle: "short" }),
       }
 
-      const existing = JSON.parse(localStorage.getItem("quizResults") || "[]")
-      localStorage.setItem("quizResults", JSON.stringify([result, ...existing]))
+      const existing = loadStoredResults()
+      setStoredResults(result, existing)
 
       const sessionKey = `quizSession_${user.username}`
       localStorage.removeItem(sessionKey)

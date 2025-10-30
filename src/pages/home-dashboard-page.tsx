@@ -1,32 +1,20 @@
 import GuestDashboard from "@/components/dashboard/guest/guest-dashboard"
 import UserDashboard from "@/components/dashboard/user/user-dashboard"
 import { useAuth } from "@/context/auth-context"
+import type { TRecentScore, TStatistic } from "@/libs/types"
+import { loadStoredResults } from "@/libs/utils"
 import { useEffect, useState } from "react"
-
-
-interface Statistic {
-  title: string
-  number: number
-}
-
-interface RecentScore {
-  user: string
-  score: number
-  date: string
-}
-
 
 export default function HomeDashboardPage() {
   const { user } = useAuth()
-  const [stats, setStats] = useState<Statistic[]>([])
-  const [recentScores, setRecentScores] = useState<RecentScore[]>([])
+  const [stats, setStats] = useState<TStatistic[]>([])
+  const [recentScores, setRecentScores] = useState<TRecentScore[]>([])
 
   useEffect(() => {
     const loadResults = () => {
-      const storedResults = localStorage.getItem("quizResults")
-      if (!storedResults) return
+      const results: TRecentScore[] = loadStoredResults()
+      if (!results) return
 
-      const results: RecentScore[] = JSON.parse(storedResults)
       setRecentScores(results.sort((a, b) => b.score - a.score))
 
       if (user?.username) {
@@ -56,9 +44,8 @@ export default function HomeDashboardPage() {
       }
     }
 
-    loadResults() // jalankan saat pertama kali mount
+    loadResults()
 
-    // Tambahkan event listener saat localStorage berubah
     window.addEventListener("storage", loadResults)
     window.addEventListener("quizResultsUpdated", loadResults)
 
@@ -67,7 +54,6 @@ export default function HomeDashboardPage() {
       window.removeEventListener("quizResultsUpdated", loadResults)
     }
   }, [user])
-  console.log(stats)
 
   return (
     <>

@@ -18,7 +18,7 @@ export default function GuestStartQuizAlert() {
       <AlertDialogTrigger asChild>
         <Button
           size="lg"
-          className="bg-purple-600 hover:bg-purple-700 text-white text-xl rounded-xl font-semibold"
+          className="text-2xl rounded-2xl"
         >
           Start Quiz
         </Button>

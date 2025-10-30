@@ -59,7 +59,7 @@ export default function UserDashboard({ user, stats, recentScore }: UserDashboar
 
         <Button
           onClick={handleStartClick}
-          className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-8 py-6 text-lg font-semibold"
+          className="rounded-full px-8 py-6 text-lg font-semibold"
         >
           Start Quiz
         </Button>
