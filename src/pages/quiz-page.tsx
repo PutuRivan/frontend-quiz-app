@@ -4,6 +4,7 @@ import QuizContainer from "@/components/quiz/quiz-container"
 import { useNavigate } from "react-router"
 import { useAuth } from "@/context/auth-context"
 
+// Struktur data untuk setiap pertanyaan
 interface Question {
   id: number
   question: string
@@ -12,135 +13,51 @@ interface Question {
   correctAnswer: string
 }
 
-const questions: Question[] = [
-  {
-    id: 1,
-    question: "What is the capital of France?",
-    category: "Geography",
-    options: [
-      { id: "a", label: "London" },
-      { id: "b", label: "Paris" },
-      { id: "c", label: "Berlin" },
-      { id: "d", label: "Madrid" },
-    ],
-    correctAnswer: "b",
-  },
-  {
-    id: 2,
-    question: "What is 2 + 2?",
-    category: "Mathematics",
-    options: [
-      { id: "a", label: "3" },
-      { id: "b", label: "4" },
-      { id: "c", label: "5" },
-      { id: "d", label: "6" },
-    ],
-    correctAnswer: "b",
-  },
-  {
-    id: 3,
-    question: "Who wrote Romeo and Juliet?",
-    category: "Literature",
-    options: [
-      { id: "a", label: "Jane Austen" },
-      { id: "b", label: "William Shakespeare" },
-      { id: "c", label: "Charles Dickens" },
-      { id: "d", label: "Mark Twain" },
-    ],
-    correctAnswer: "b",
-  },
-  {
-    id: 4,
-    question: "What is the powerhouse of the cell?",
-    category: "Science",
-    options: [
-      { id: "a", label: "Nucleus" },
-      { id: "b", label: "Mitochondria" },
-      { id: "c", label: "Ribosome" },
-      { id: "d", label: "Endoplasmic Reticulum" },
-    ],
-    correctAnswer: "b",
-  },
-  {
-    id: 5,
-    question: "What is the largest planet in our solar system?",
-    category: "Astronomy",
-    options: [
-      { id: "a", label: "Saturn" },
-      { id: "b", label: "Jupiter" },
-      { id: "c", label: "Neptune" },
-      { id: "d", label: "Uranus" },
-    ],
-    correctAnswer: "b",
-  },
-  {
-    id: 6,
-    question: "In what year did World War II end?",
-    category: "History",
-    options: [
-      { id: "a", label: "1943" },
-      { id: "b", label: "1945" },
-      { id: "c", label: "1944" },
-      { id: "d", label: "1946" },
-    ],
-    correctAnswer: "b",
-  },
-  {
-    id: 7,
-    question: "What is the chemical symbol for Gold?",
-    category: "Chemistry",
-    options: [
-      { id: "a", label: "Go" },
-      { id: "b", label: "Au" },
-      { id: "c", label: "Gd" },
-      { id: "d", label: "Ag" },
-    ],
-    correctAnswer: "b",
-  },
-  {
-    id: 8,
-    question: "Which country is home to the kangaroo?",
-    category: "Biology",
-    options: [
-      { id: "a", label: "New Zealand" },
-      { id: "b", label: "Australia" },
-      { id: "c", label: "South Africa" },
-      { id: "d", label: "Brazil" },
-    ],
-    correctAnswer: "b",
-  },
-  {
-    id: 9,
-    question: "What is the smallest prime number?",
-    category: "Mathematics",
-    options: [
-      { id: "a", label: "0" },
-      { id: "b", label: "2" },
-      { id: "c", label: "1" },
-      { id: "d", label: "3" },
-    ],
-    correctAnswer: "b",
-  },
-  {
-    id: 10,
-    question: "What is the speed of light?",
-    category: "Physics",
-    options: [
-      { id: "a", label: "300,000 km/s" },
-      { id: "b", label: "150,000 km/s" },
-      { id: "c", label: "450,000 km/s" },
-      { id: "d", label: "600,000 km/s" },
-    ],
-    correctAnswer: "a",
-  },
-]
-
 export default function QuizPage() {
+  const [questions, setQuestions] = useState<Question[]>([])
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string>>({})
   const [timeLeft, setTimeLeft] = useState(60)
+  const [loading, setLoading] = useState(true)
+
   const navigate = useNavigate()
   const { user } = useAuth()
+
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const res = await fetch("https://opentdb.com/api.php?amount=10&category=21&difficulty=easy&type=multiple")
+        const data = await res.json()
+
+        const formatted: Question[] = data.results.map((item: any, index: number) => {
+          // Gabungkan jawaban benar + salah, lalu acak
+          const allAnswers = [...item.incorrect_answers, item.correct_answer]
+          const shuffled = allAnswers.sort(() => Math.random() - 0.5)
+
+          return {
+            id: index + 1,
+            question: decodeHTMLEntities(item.question),
+            category: item.category,
+            options: shuffled.map((ans, i) => ({
+              id: String.fromCharCode(97 + i),
+              label: decodeHTMLEntities(ans),
+            })),
+            correctAnswer: String.fromCharCode(
+              97 + shuffled.indexOf(item.correct_answer)
+            ),
+          }
+        })
+
+        setQuestions(formatted)
+        setLoading(false)
+      } catch (error) {
+        console.error("Failed to fetch questions:", error)
+        setLoading(false)
+      }
+    }
+
+    fetchQuestions()
+  }, [])
 
   const question = questions[currentQuestion]
   const progress = ((currentQuestion + 1) / questions.length) * 100
@@ -160,11 +77,14 @@ export default function QuizPage() {
       const result = {
         user: user.username,
         score,
-        date: new Date().toISOString().split("T")[0],
+        date: new Date().toLocaleString("id-ID", {
+          dateStyle: "short",
+          timeStyle: "short",
+        })
       }
 
       const existingResults = JSON.parse(localStorage.getItem("quizResults") || "[]")
-      const updatedResults = [...existingResults, result]
+      const updatedResults = [result, ...existingResults]
 
       localStorage.setItem("quizResults", JSON.stringify(updatedResults))
     }
@@ -174,8 +94,9 @@ export default function QuizPage() {
     })
   }
 
-
+  // Timer
   useEffect(() => {
+    if (!questions.length || loading) return
     if (timeLeft <= 0) {
       handleFinishQuiz()
       return
@@ -186,7 +107,7 @@ export default function QuizPage() {
     }, 1000)
 
     return () => clearInterval(timer)
-  }, [timeLeft])
+  }, [timeLeft, questions, loading])
 
   const handleNext = () => {
     if (currentQuestion < questions.length - 1) {
@@ -212,6 +133,22 @@ export default function QuizPage() {
   }
 
   const allAnswered = answeredCount === questions.length
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <p className="text-lg font-medium text-slate-600 animate-pulse">Loading questions...</p>
+      </div>
+    )
+  }
+
+  if (!questions.length) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <p className="text-lg font-medium text-red-500">Failed to load quiz questions.</p>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 p-6">
@@ -239,4 +176,11 @@ export default function QuizPage() {
       </div>
     </div>
   )
+}
+
+// Fungsi helper untuk mengubah karakter HTML (misalnya &quot;, &#039;)
+function decodeHTMLEntities(text: string) {
+  const textarea = document.createElement("textarea")
+  textarea.innerHTML = text
+  return textarea.value
 }

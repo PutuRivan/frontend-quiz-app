@@ -22,42 +22,52 @@ export default function HomeDashboardPage() {
   const [recentScores, setRecentScores] = useState<RecentScore[]>([])
 
   useEffect(() => {
-    const storedResults = localStorage.getItem("quizResults")
-    if (!storedResults) return
+    const loadResults = () => {
+      const storedResults = localStorage.getItem("quizResults")
+      if (!storedResults) return
 
-    const results: RecentScore[] = JSON.parse(storedResults)
+      const results: RecentScore[] = JSON.parse(storedResults)
+      setRecentScores(results.sort((a, b) => b.score - a.score))
 
-    // Urutkan leaderboard dari skor tertinggi
-    setRecentScores(results.sort((a, b) => b.score - a.score))
+      if (user?.username) {
+        const userResults = results.filter(r => r.user === user.username)
 
-    // Hitung statistik user login
-    if (user?.username) {
-      const userResults = results.filter(r => r.user === user.username)
+        if (userResults.length > 0) {
+          const sortedByDate = [...userResults].sort(
+            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+          )
 
-      if (userResults.length > 0) {
-        // Urutkan berdasarkan tanggal terbaru (descending)
-        const sortedByDate = [...userResults].sort(
-          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-        )
+          const lastScore = sortedByDate[0].score
+          const bestScore = Math.max(...userResults.map(r => r.score))
+          const totalAttempts = userResults.length
 
-        const lastScore = sortedByDate[0].score // hasil terbaru
-        const bestScore = Math.max(...userResults.map(r => r.score))
-        const totalAttempts = userResults.length
-
-        setStats([
-          { title: "Last Score", number: lastScore },
-          { title: "Total Attempts", number: totalAttempts },
-          { title: "Best Score", number: bestScore },
-        ])
-      } else {
-        setStats([
-          { title: "Last Score", number: 0 },
-          { title: "Total Attempts", number: 0 },
-          { title: "Best Score", number: 0 },
-        ])
+          setStats([
+            { title: "Last Score", number: lastScore },
+            { title: "Total Attempts", number: totalAttempts },
+            { title: "Best Score", number: bestScore },
+          ])
+        } else {
+          setStats([
+            { title: "Last Score", number: 0 },
+            { title: "Total Attempts", number: 0 },
+            { title: "Best Score", number: 0 },
+          ])
+        }
       }
     }
+
+    loadResults() // jalankan saat pertama kali mount
+
+    // Tambahkan event listener saat localStorage berubah
+    window.addEventListener("storage", loadResults)
+    window.addEventListener("quizResultsUpdated", loadResults)
+
+    return () => {
+      window.removeEventListener("storage", loadResults)
+      window.removeEventListener("quizResultsUpdated", loadResults)
+    }
   }, [user])
+
 
   return (
     <>
