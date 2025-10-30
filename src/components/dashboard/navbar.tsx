@@ -16,10 +16,7 @@ export default function Navbar() {
           <h1 className="text-2xl font-bold text-foreground">QuizMaster</h1>
         </div>
         {user?.username ? (
-          // <Button onClick={logout} variant="outline" className="bg-purple-100 text-purple-600 hover:bg-purple-200 border-purple-200">
-          //   Logout
-          // </Button>
-          <LogoutConfirmation />
+          <LogoutConfirmation logout={logout} />
         ) : (
           <div className="flex gap-5">
             <Button variant={"secondary"}>

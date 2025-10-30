@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/sonner";
 import AuthProviders from "./auth-providers";
 
 export default function Providers({
@@ -8,6 +9,7 @@ export default function Providers({
   return (
     <AuthProviders>
       {children}
+      <Toaster position="top-center" richColors theme="light"/>
     </AuthProviders>
   )
 }

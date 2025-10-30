@@ -1,19 +1,9 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useNavigate } from "react-router"
-import { useAuth } from "@/context/auth-context"
+import ResumeDialog from "./resume-dialog"
 
 interface Statistic {
   title: string
@@ -37,7 +27,6 @@ export default function UserDashboard({ user, stats, recentScore }: UserDashboar
   const navigate = useNavigate()
 
   const handleStartClick = () => {
-    // 🔹 Hanya tampilkan resume jika user login & ada session
     const savedSession = localStorage.getItem(`quizSession_${user}`)
     if (user && savedSession) {
       const parsed = JSON.parse(savedSession)
@@ -46,8 +35,6 @@ export default function UserDashboard({ user, stats, recentScore }: UserDashboar
         return
       }
     }
-
-    // 🔹 Jika tidak ada session atau guest → langsung mulai quiz
     navigate("/quiz")
   }
 
@@ -59,12 +46,11 @@ export default function UserDashboard({ user, stats, recentScore }: UserDashboar
 
   const handleResumeQuiz = () => {
     setShowResumeDialog(false)
-    navigate("/quiz?resume=true") // kirim sinyal resume via query param
+    navigate("/quiz?resume=true")
   }
 
   return (
     <section>
-      {/* Welcome Section */}
       <div className="mb-10 flex items-start justify-between">
         <div>
           <h2 className="text-3xl font-bold text-foreground mb-2">Welcome, {user}!</h2>
@@ -79,23 +65,22 @@ export default function UserDashboard({ user, stats, recentScore }: UserDashboar
         </Button>
       </div>
 
-      {/* Stats Cards */}
-      <div>
-        {stats.length === 0 ? (
-          <h1 className="text-center text-muted-foreground">No statistics available yet.</h1>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            {stats.map((item, index) => (
-              <Card key={index} className="p-5 border border-border">
-                <p className="text-sm font-medium text-muted-foreground mb-2">{item.title}</p>
-                <p className="text-4xl font-bold text-foreground">{item.number}</p>
-              </Card>
-            ))}
-          </div>
-        )}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        {stats.length === 0
+          ? ["Last Score", "Total Attempts", "Best Score"].map((title, index) => (
+            <Card key={index} className="p-5 border border-border">
+              <p className="text-sm font-medium text-muted-foreground mb-2">{title}</p>
+              <p className="text-4xl font-bold text-foreground">0</p>
+            </Card>
+          ))
+          : stats.map((item, index) => (
+            <Card key={index} className="p-5 border border-border">
+              <p className="text-sm font-medium text-muted-foreground mb-2">{item.title}</p>
+              <p className="text-4xl font-bold text-foreground">{item.number}</p>
+            </Card>
+          ))}
       </div>
 
-      {/* Recent Scores Section */}
       <div>
         <h3 className="text-xl font-bold text-foreground mb-5">Recent Scores</h3>
         {recentScore.length === 0 ? (
@@ -124,21 +109,12 @@ export default function UserDashboard({ user, stats, recentScore }: UserDashboar
         )}
       </div>
 
-      {/* 🔹 Resume Quiz Dialog */}
-      <AlertDialog open={showResumeDialog} onOpenChange={setShowResumeDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Resume Quiz?</AlertDialogTitle>
-            <AlertDialogDescription>
-              You have an unfinished quiz session. Would you like to continue where you left off or start a new quiz?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleStartNewQuiz}>Start New</AlertDialogCancel>
-            <AlertDialogAction onClick={handleResumeQuiz}>Resume</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ResumeDialog
+        open={showResumeDialog}
+        onOpenChange={setShowResumeDialog}
+        onStartNew={handleStartNewQuiz}
+        onResume={handleResumeQuiz}
+      />
     </section>
   )
 }

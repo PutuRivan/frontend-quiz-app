@@ -30,3 +30,9 @@ export function loadUsers() {
 export function saveUsers(users: any) {
   localStorage.setItem('stored_users', JSON.stringify(users));
 }
+
+export function decodeHTMLEntities(text: string) {
+  const textarea = document.createElement("textarea")
+  textarea.innerHTML = text
+  return textarea.value
+}

@@ -3,6 +3,8 @@ import QuizHeader from "@/components/quiz/quiz-header"
 import QuizContainer from "@/components/quiz/quiz-container"
 import { useNavigate, useLocation } from "react-router"
 import { useAuth } from "@/context/auth-context"
+import { getQuestion } from "@/libs/apis"
+import { decodeHTMLEntities } from "@/libs/utils"
 
 interface Question {
   id: number
@@ -18,22 +20,14 @@ export default function QuizPage() {
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string>>({})
   const [timeLeft, setTimeLeft] = useState(600)
   const [loading, setLoading] = useState(true)
-
   const { user } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
 
-  const decodeHTMLEntities = (text: string) => {
-    const textarea = document.createElement("textarea")
-    textarea.innerHTML = text
-    return textarea.value
-  }
-
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const res = await fetch("https://opentdb.com/api.php?amount=5&category=31&difficulty=hard&type=multiple")
-        const data = await res.json()
+        const data = await getQuestion(10, "easy", "multiple", 10)
 
         const formatted: Question[] = data.results.map((item: any, index: number) => {
           const allAnswers = [...item.incorrect_answers, item.correct_answer]
@@ -77,7 +71,6 @@ export default function QuizPage() {
     fetchQuestions()
   }, [location, user])
 
-  // ✅ Simpan session per user
   useEffect(() => {
     if (user?.username && questions.length > 0) {
       const sessionKey = `quizSession_${user.username}`
@@ -105,7 +98,6 @@ export default function QuizPage() {
       const existing = JSON.parse(localStorage.getItem("quizResults") || "[]")
       localStorage.setItem("quizResults", JSON.stringify([result, ...existing]))
 
-      // ✅ Hapus session user saat quiz selesai
       const sessionKey = `quizSession_${user.username}`
       localStorage.removeItem(sessionKey)
     }
@@ -113,7 +105,6 @@ export default function QuizPage() {
     navigate("/quiz/result", { state: { totalQuestions, correctAnswers, wrongAnswers, score } })
   }
 
-  // Timer
   useEffect(() => {
     if (!questions.length || loading) return
     if (timeLeft <= 0) {
@@ -145,7 +136,13 @@ export default function QuizPage() {
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 p-6">
       <div className="mx-auto max-w-4xl">
-        <QuizHeader currentQuestion={currentQuestion} questions={questions} timeLeft={timeLeft} progress={progress} />
+        <QuizHeader
+          currentQuestion={currentQuestion}
+          questions={questions}
+          timeLeft={timeLeft}
+          progress={progress}
+        />
+
         <QuizContainer
           questions={questions}
           question={questions[currentQuestion]}

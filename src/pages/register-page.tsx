@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router";
 import { user, type TUser } from "@/libs/schema";
 import { useAuth } from "@/context/auth-context";
+import { toast } from "sonner";
 
 
 export default function RegisterPage() {
@@ -27,10 +28,10 @@ export default function RegisterPage() {
         username: values.username,
         password: values.password
       })
-
+      toast.success('Berhasil membuat akun')
       navigate('/')
     } catch (error: any) {
-      alert(error.message || "Gagal membuat akun");
+      toast.error('User sudah ada')
     }
   }
   

@@ -10,10 +10,12 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
-import { useAuth } from "@/context/auth-context"
 
-export function LogoutConfirmation() {
-  const { logout } = useAuth()
+interface LogoutConfirmationProps {
+  logout: () => void
+}
+
+export function LogoutConfirmation({ logout }: LogoutConfirmationProps) {
 
   return (
     <AlertDialog>

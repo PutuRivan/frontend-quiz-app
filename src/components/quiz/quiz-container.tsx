@@ -46,7 +46,6 @@ export default function QuizContainer({
 }: QuizContainerProps) {
   return (
     <section>
-      {/* Question Navigation */}
       <div className="mb-8 flex gap-3 overflow-x-auto pb-2">
         {questions.map((q, index) => (
           <button
@@ -64,16 +63,13 @@ export default function QuizContainer({
         ))}
       </div>
 
-      {/* Question Card */}
       <div className="mb-8 rounded-3xl bg-linear-to-br from-blue-600 to-blue-800 p-8 text-white shadow-lg">
         <p className="mb-2 text-sm font-medium opacity-90">
           Question {currentQuestion + 1}
         </p>
         <h2 className="mb-4 text-3xl font-bold">{question.question}</h2>
-        {/* <p className="text-sm opacity-75">Category: {question.category}</p> */}
       </div>
 
-      {/* Answer Options */}
       <div className="mb-8 space-y-3">
         <RadioGroup
           value={selectedAnswers[currentQuestion] || ""}
@@ -100,7 +96,6 @@ export default function QuizContainer({
         </RadioGroup>
       </div>
 
-      {/* Navigation Buttons */}
       <div className="flex items-center justify-between">
         <Button
           onClick={handlePrevious}
@@ -117,17 +112,15 @@ export default function QuizContainer({
         </div>
 
         {currentQuestion === questions.length - 1 && allAnswered ? (
-          // 🔹 Kalau di pertanyaan terakhir & semua sudah dijawab → Submit
           <Button
             type="button"
-            onClick={handleFinishQuiz} // akan kamu ganti di QuizPage dengan handleFinishQuiz
+            onClick={handleFinishQuiz}
             className="gap-2 rounded-full bg-green-600 px-6 py-2 text-white hover:bg-green-700"
           >
             <Check className="h-5 w-5" />
             Submit
           </Button>
         ) : (
-          // 🔹 Selain itu tetap Next
           <Button
             onClick={handleNext}
             disabled={currentQuestion === questions.length - 1}

@@ -67,7 +67,7 @@ export default function HomeDashboardPage() {
       window.removeEventListener("quizResultsUpdated", loadResults)
     }
   }, [user])
-
+  console.log(stats)
 
   return (
     <>

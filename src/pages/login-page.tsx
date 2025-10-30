@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router";
 import { type TUser, user } from "@/libs/schema";
 import { useAuth } from "@/context/auth-context";
+import { toast } from "sonner";
 
 
 export default function LoginPage() {
@@ -26,10 +27,10 @@ export default function LoginPage() {
         username: values.username,
         password: values.password
       })
-
+      toast.success('Berhasil Login')
       navigate('/dashboard')
     } catch (error: any) {
-      alert(error.message || "Gagal login");
+      toast.error("Gagal Login")
     }
   }
 
