@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react"
 import QuizHeader from "@/components/quiz/quiz-header"
 import QuizContainer from "@/components/quiz/quiz-container"
-import { useNavigate } from "react-router"
+import { useNavigate, useLocation } from "react-router"
 import { useAuth } from "@/context/auth-context"
 
-// Struktur data untuk setiap pertanyaan
 interface Question {
   id: number
   question: string
@@ -20,9 +19,17 @@ export default function QuizPage() {
   const [timeLeft, setTimeLeft] = useState(60)
   const [loading, setLoading] = useState(true)
 
-  const navigate = useNavigate()
   const { user } = useAuth()
+  const navigate = useNavigate()
+  const location = useLocation()
 
+  const decodeHTMLEntities = (text: string) => {
+    const textarea = document.createElement("textarea")
+    textarea.innerHTML = text
+    return textarea.value
+  }
+
+  // 🔹 Fetch atau Resume
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
@@ -30,7 +37,6 @@ export default function QuizPage() {
         const data = await res.json()
 
         const formatted: Question[] = data.results.map((item: any, index: number) => {
-          // Gabungkan jawaban benar + salah, lalu acak
           const allAnswers = [...item.incorrect_answers, item.correct_answer]
           const shuffled = allAnswers.sort(() => Math.random() - 0.5)
 
@@ -42,9 +48,7 @@ export default function QuizPage() {
               id: String.fromCharCode(97 + i),
               label: decodeHTMLEntities(ans),
             })),
-            correctAnswer: String.fromCharCode(
-              97 + shuffled.indexOf(item.correct_answer)
-            ),
+            correctAnswer: String.fromCharCode(97 + shuffled.indexOf(item.correct_answer)),
           }
         })
 
@@ -56,12 +60,33 @@ export default function QuizPage() {
       }
     }
 
-    fetchQuestions()
-  }, [])
+    // 🔹 Jika resume = true dan session ada
+    const query = new URLSearchParams(location.search)
+    if (query.get("resume") === "true" && user?.username) {
+      const saved = localStorage.getItem("quizSession")
+      if (saved) {
+        const session = JSON.parse(saved)
+        if (session.user === user.username) {
+          setQuestions(session.questions)
+          setSelectedAnswers(session.selectedAnswers || {})
+          setCurrentQuestion(session.currentQuestion || 0)
+          setTimeLeft(session.timeLeft || 60)
+          setLoading(false)
+          return
+        }
+      }
+    }
 
-  const question = questions[currentQuestion]
-  const progress = ((currentQuestion + 1) / questions.length) * 100
-  const answeredCount = Object.keys(selectedAnswers).length
+    fetchQuestions()
+  }, [location, user])
+
+  // 🔹 Auto-save session (hanya kalau login)
+  useEffect(() => {
+    if (user?.username && questions.length > 0) {
+      const session = { user: user.username, questions, selectedAnswers, currentQuestion, timeLeft }
+      localStorage.setItem("quizSession", JSON.stringify(session))
+    }
+  }, [user, questions, selectedAnswers, currentQuestion, timeLeft])
 
   const handleFinishQuiz = () => {
     const correctAnswers = questions.filter(
@@ -72,26 +97,19 @@ export default function QuizPage() {
     const wrongAnswers = totalQuestions - correctAnswers
     const score = Math.round((correctAnswers / totalQuestions) * 100)
 
-    // Hanya simpan kalau user login
     if (user?.username) {
       const result = {
         user: user.username,
         score,
-        date: new Date().toLocaleString("id-ID", {
-          dateStyle: "short",
-          timeStyle: "short",
-        })
+        date: new Date().toLocaleString("id-ID", { dateStyle: "short", timeStyle: "short" }),
       }
 
-      const existingResults = JSON.parse(localStorage.getItem("quizResults") || "[]")
-      const updatedResults = [result, ...existingResults]
-
-      localStorage.setItem("quizResults", JSON.stringify(updatedResults))
+      const existing = JSON.parse(localStorage.getItem("quizResults") || "[]")
+      localStorage.setItem("quizResults", JSON.stringify([result, ...existing]))
+      localStorage.removeItem("quizSession")
     }
 
-    navigate("/quiz/result", {
-      state: { totalQuestions, correctAnswers, wrongAnswers, score },
-    })
+    navigate("/quiz/result", { state: { totalQuestions, correctAnswers, wrongAnswers, score } })
   }
 
   // Timer
@@ -102,67 +120,34 @@ export default function QuizPage() {
       return
     }
 
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => prev - 1)
-    }, 1000)
-
+    const timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000)
     return () => clearInterval(timer)
   }, [timeLeft, questions, loading])
 
-  const handleNext = () => {
-    if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1)
-    }
-  }
+  const handleNext = () => currentQuestion < questions.length - 1 && setCurrentQuestion((prev) => prev + 1)
+  const handlePrevious = () => currentQuestion > 0 && setCurrentQuestion((prev) => prev - 1)
+  const handleSelectAnswer = (optionId: string) =>
+    setSelectedAnswers((prev) => ({ ...prev, [currentQuestion]: optionId }))
+  const handleQuestionClick = (index: number) => setCurrentQuestion(index)
 
-  const handlePrevious = () => {
-    if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion - 1)
-    }
-  }
-
-  const handleSelectAnswer = (optionId: string) => {
-    setSelectedAnswers((prev) => ({
-      ...prev,
-      [currentQuestion]: optionId,
-    }))
-  }
-
-  const handleQuestionClick = (index: number) => {
-    setCurrentQuestion(index)
-  }
-
+  const progress = ((currentQuestion + 1) / questions.length) * 100
+  const answeredCount = Object.keys(selectedAnswers).length
   const allAnswered = answeredCount === questions.length
 
-  if (loading) {
+  if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <p className="text-lg font-medium text-slate-600 animate-pulse">Loading questions...</p>
       </div>
     )
-  }
-
-  if (!questions.length) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <p className="text-lg font-medium text-red-500">Failed to load quiz questions.</p>
-      </div>
-    )
-  }
 
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 p-6">
       <div className="mx-auto max-w-4xl">
-        <QuizHeader
-          currentQuestion={currentQuestion}
-          questions={questions}
-          timeLeft={timeLeft}
-          progress={progress}
-        />
-
+        <QuizHeader currentQuestion={currentQuestion} questions={questions} timeLeft={timeLeft} progress={progress} />
         <QuizContainer
           questions={questions}
-          question={question}
+          question={questions[currentQuestion]}
           currentQuestion={currentQuestion}
           selectedAnswers={selectedAnswers}
           answeredCount={answeredCount}
@@ -176,11 +161,4 @@ export default function QuizPage() {
       </div>
     </div>
   )
-}
-
-// Fungsi helper untuk mengubah karakter HTML (misalnya &quot;, &#039;)
-function decodeHTMLEntities(text: string) {
-  const textarea = document.createElement("textarea")
-  textarea.innerHTML = text
-  return textarea.value
 }
