@@ -61,7 +61,7 @@ export default function QuizResultPage() {
           <Button
             variant="outline"
             className="border-2 border-gray-300 text-gray-800 font-semibold px-8 py-6 rounded-full text-lg hover:bg-gray-50 bg-transparent"
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/dashboard', { state: { refresh: true } })}
           >
             Go Home
           </Button>

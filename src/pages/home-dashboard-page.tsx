@@ -35,7 +35,12 @@ export default function HomeDashboardPage() {
       const userResults = results.filter(r => r.user === user.username)
 
       if (userResults.length > 0) {
-        const lastScore = userResults[userResults.length - 1].score
+        // Urutkan berdasarkan tanggal terbaru (descending)
+        const sortedByDate = [...userResults].sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+        )
+
+        const lastScore = sortedByDate[0].score // hasil terbaru
         const bestScore = Math.max(...userResults.map(r => r.score))
         const totalAttempts = userResults.length
 
@@ -45,7 +50,6 @@ export default function HomeDashboardPage() {
           { title: "Best Score", number: bestScore },
         ])
       } else {
-        // Jika belum pernah main, tampilkan default
         setStats([
           { title: "Last Score", number: 0 },
           { title: "Total Attempts", number: 0 },
@@ -54,6 +58,7 @@ export default function HomeDashboardPage() {
       }
     }
   }, [user])
+
   return (
     <>
       {user?.username ? (

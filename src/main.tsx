@@ -9,10 +9,10 @@ import HomeDashboardPage from './pages/home-dashboard-page.tsx'
 import QuizPage from './pages/quiz-page.tsx'
 import QuizLayout from './layout/quiz-layout.tsx'
 import QuizResultPage from './pages/quiz-result-page.tsx'
-import AuthProviders from './providers/auth-providers.tsx'
+import Providers from './providers/index.tsx'
 
 createRoot(document.getElementById('root')!).render(
-  <AuthProviders>
+  <Providers>
     <BrowserRouter>
       <Routes>
         <Route element={<AuthLayout />}>
@@ -28,5 +28,5 @@ createRoot(document.getElementById('root')!).render(
         </Route>
       </Routes>
     </BrowserRouter>
-  </AuthProviders>
+  </Providers>
 )

@@ -29,11 +29,11 @@ export default function UserDashboard({ user, stats, recentScore }: UserDashboar
           <h2 className="text-3xl font-bold text-foreground mb-2">Welcome, {user}!</h2>
           <p className="text-sm text-muted-foreground">Ready to test your knowledge?</p>
         </div>
-        <Button className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-8 py-6 text-lg font-semibold">
-          <Link to={'/quiz'}>
+        <Link to={'/quiz'}>
+          <Button className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-8 py-6 text-lg font-semibold">
             Start Quiz
-          </Link>
-        </Button>
+          </Button>
+        </Link>
       </div>
 
       {/* Stats Cards */}
