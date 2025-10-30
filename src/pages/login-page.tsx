@@ -68,9 +68,16 @@ export default function LoginPage() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full">Register</Button>
+              <Button type="submit" className="w-full">Login</Button>
             </form>
           </Form>
+          <Button
+            variant={"secondary"}
+            onClick={() => navigate("/dashboard")}
+            className="w-full mt-4">
+
+            Continue as Guest
+          </Button>
         </CardContent>
         <p className="text-center text-sm">Don&apos;t have an account?
           <Link to="/register" className="text-blue-400 px-2">register here</Link>

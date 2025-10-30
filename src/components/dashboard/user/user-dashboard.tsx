@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useNavigate } from "react-router"
+import { useAuth } from "@/context/auth-context"
 
 interface Statistic {
   title: string
@@ -37,7 +38,7 @@ export default function UserDashboard({ user, stats, recentScore }: UserDashboar
 
   const handleStartClick = () => {
     // 🔹 Hanya tampilkan resume jika user login & ada session
-    const savedSession = localStorage.getItem("quizSession")
+    const savedSession = localStorage.getItem(`quizSession_${user}`)
     if (user && savedSession) {
       const parsed = JSON.parse(savedSession)
       if (parsed.user === user) {
@@ -51,7 +52,7 @@ export default function UserDashboard({ user, stats, recentScore }: UserDashboar
   }
 
   const handleStartNewQuiz = () => {
-    localStorage.removeItem("quizSession")
+    localStorage.removeItem(`quizSession_${user}`)
     setShowResumeDialog(false)
     navigate("/quiz")
   }
