@@ -118,8 +118,17 @@ export default function QuizPage() {
 
   const handleNext = () => currentQuestion < questions.length - 1 && setCurrentQuestion((prev) => prev + 1)
   const handlePrevious = () => currentQuestion > 0 && setCurrentQuestion((prev) => prev - 1)
-  const handleSelectAnswer = (optionId: string) =>
+  const handleSelectAnswer = (optionId: string) => {
     setSelectedAnswers((prev) => ({ ...prev, [currentQuestion]: optionId }))
+
+    setTimeout(() => {
+      if (currentQuestion < questions.length - 1) {
+        setCurrentQuestion((prev) => prev + 1)
+      } else {
+        handleFinishQuiz()
+      }
+    }, 500) // delay kecil biar user lihat dulu jawabannya
+  }
   const handleQuestionClick = (index: number) => setCurrentQuestion(index)
 
   const progress = ((currentQuestion + 1) / questions.length) * 100
